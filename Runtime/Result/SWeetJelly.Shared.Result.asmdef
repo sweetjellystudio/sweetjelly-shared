@@ -1,0 +1,14 @@
+{
+    "name": "SWeetJelly.Shared.Result",
+    "rootNamespace": "SWeetJelly.Shared.Result",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

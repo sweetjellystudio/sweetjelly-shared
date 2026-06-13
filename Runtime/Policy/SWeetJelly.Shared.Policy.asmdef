@@ -1,0 +1,14 @@
+{
+    "name": "SWeetJelly.Shared.Policy",
+    "rootNamespace": "SWeetJelly.Shared.Policy",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "com.sweetjelly.shared",
+  "version": "1.0.0",
+  "displayName": "SWeetJelly Shared",
+  "description": "Shared result and policy value types for SWeetJelly packages.",
+  "unity": "2022.3",
+  "dependencies": {},
+  "author": {
+    "name": "SWeetJellyStudio",
+    "email": "sweetjellystudio@gmail.com",
+    "url": "https://www.sweetjellystudio.com"
+  }
+}
