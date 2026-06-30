@@ -1,0 +1,22 @@
+{
+    "name": "SWeetJelly.Shared.Tests.EditMode",
+    "rootNamespace": "SWeetJelly.Shared.Tests.EditMode",
+    "references": [
+        "SWeetJelly.Shared.Result",
+        "SWeetJelly.Shared.Policy"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "noEngineReferences": false
+}

@@ -1,6 +1,6 @@
 {
   "name": "com.sweetjelly.shared",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "SWeetJelly Shared",
   "description": "Shared result and policy value types for SWeetJelly packages.",
   "unity": "2022.3",
