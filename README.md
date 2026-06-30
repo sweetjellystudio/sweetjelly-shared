@@ -6,14 +6,15 @@ The shared package owns common contract shapes, not package-specific meanings.
 
 ```text
 SWeetJelly.Shared
-├── Result
-│   ├── Result
-│   ├── Result<T>
-│   ├── Results
-│   └── Error
-└── Policy
-    ├── Verdict
-    └── Verdict<TReason>
+  Result
+    Result
+    Result<T>
+    Results
+    Error
+  Policy
+    Verdict
+    Verdict<TReason>
+    Verdict<TValue, TReason>
 ```
 
 ## Result
@@ -104,20 +105,20 @@ public static class SaveErrors
 
 Policy types represent decisions, not operation failures.
 
-A policy can evaluate successfully and still block an action.
+A policy can evaluate successfully and still reject an action.
 
 ```csharp
 using SWeetJelly.Shared.Policy;
 
-Verdict<DungeonEntryBlockReason> CanEnterDungeon(Player player)
+Verdict<DungeonEntryRejectReason> CanEnterDungeon(Player player)
 {
     if (player.Level >= 10)
-        return Verdict<DungeonEntryBlockReason>.Allow();
+        return Verdict<DungeonEntryRejectReason>.Allow();
 
-    return Verdict<DungeonEntryBlockReason>.Block(DungeonEntryBlockReason.LevelTooLow);
+    return Verdict<DungeonEntryRejectReason>.Reject(DungeonEntryRejectReason.LevelTooLow);
 }
 
-public enum DungeonEntryBlockReason
+public enum DungeonEntryRejectReason
 {
     None = 0,
     LevelTooLow = 1,
@@ -129,32 +130,67 @@ public enum DungeonEntryBlockReason
 
 `Verdict` represents a policy decision without a shared reason payload.
 
-Use it only when the caller needs the allow/block state and the block reason is not part of the contract.
+Use it only when the caller needs the allow/reject state and the reject reason is not part of the contract.
 
 ```csharp
-var verdict = isReady ? Verdict.Allow() : Verdict.Block();
+var verdict = isReady ? Verdict.Allow() : Verdict.Reject();
 ```
 
 ## Verdict<TReason>
 
-`Verdict<TReason>` represents a policy decision with a package-owned reason type.
+`Verdict<TReason>` represents a policy decision with a package-owned reject reason type.
 
 Use it when the question is:
 
 ```text
-Is this action allowed? If not, why was it blocked?
+Is this action allowed? If not, why was it rejected?
 ```
 
 `TReason` should be owned by the package that owns the policy meaning.
 
 ```csharp
-public enum ShopPurchaseBlockReason
+public enum ShopPurchaseRejectReason
 {
     None = 0,
     NotEnoughGold = 1,
     ItemSoldOut = 2
 }
 ```
+
+## Verdict<TValue, TReason>
+
+`Verdict<TValue, TReason>` represents a policy decision that carries a value when allowed and a reason when rejected.
+
+Use it when an allowed decision produces execution data.
+
+```csharp
+using SWeetJelly.Shared.Policy;
+
+Verdict<IReadOnlyList<BoardCommand>, CommandRejectReason> ResolveCommand(Command command)
+{
+    if (!CanResolve(command))
+        return Verdict<IReadOnlyList<BoardCommand>, CommandRejectReason>.Reject(CommandRejectReason.InvalidState);
+
+    return Verdict<IReadOnlyList<BoardCommand>, CommandRejectReason>.Allow(BuildCommands(command));
+}
+```
+
+Access `Value` only after checking `IsAllowed`.
+
+```csharp
+var verdict = ResolveCommand(command);
+
+if (verdict.IsRejected)
+    return;
+
+Run(verdict.Value);
+```
+
+## Deprecated Block API
+
+`Block()` and `IsBlocked` remain available for compatibility.
+
+Prefer `Reject()` and `IsRejected` in new code. The `Block()` factory methods are obsolete and will be removed in a future patch.
 
 ## Result vs Verdict
 
@@ -168,37 +204,41 @@ Parse config -> Result<Config>
 Create save data -> Result<SaveData>
 ```
 
-`Verdict<TReason>` has `TReason` because policy decisions often need a package-owned blocked reason.
+`Verdict<TReason>` has `TReason` because policy decisions often need a package-owned reject reason.
 
 The policy question is usually binary:
 
 ```text
-Allow or block?
+Allow or reject?
 ```
 
-If a policy evaluation itself can fail, wrap the decision in `Result<Verdict<TReason>>`.
+`Verdict<TValue, TReason>` adds an allowed value for decisions that produce execution data.
+
+If a policy evaluation itself can fail, wrap the decision in `Result<Verdict<TReason>>` or `Result<Verdict<TValue, TReason>>`.
 
 ```csharp
 using SWeetJelly.Shared.Policy;
 using SWeetJelly.Shared.Result;
 
-Result<Verdict<PolicyBlockReason>> EvaluatePolicy()
+Result<Verdict<PolicyRejectReason>> EvaluatePolicy()
 {
     if (!TryLoadPolicyConfig(out var config))
-        return Results.Failure<Verdict<PolicyBlockReason>>(PolicyErrors.ConfigMissing);
+        return Results.Failure<Verdict<PolicyRejectReason>>(PolicyErrors.ConfigMissing);
 
     if (config.Enabled)
-        return Results.Success(Verdict<PolicyBlockReason>.Allow());
+        return Results.Success(Verdict<PolicyRejectReason>.Allow());
 
-    return Results.Success(Verdict<PolicyBlockReason>.Block(PolicyBlockReason.Disabled));
+    return Results.Success(Verdict<PolicyRejectReason>.Reject(PolicyRejectReason.Disabled));
 }
 ```
 
 In short:
 
 ```text
-Result<T>                 = operation outcome with optional produced value
-Error                     = operation failure shape
-Verdict<TReason>          = policy decision with package-owned reason
-Result<Verdict<TReason>>  = policy evaluation that can fail
+Result<T>                       = operation outcome with optional produced value
+Error                           = operation failure shape
+Verdict<TReason>                = policy decision with package-owned reject reason
+Verdict<TValue, TReason>        = policy decision with allowed value or reject reason
+Result<Verdict<TReason>>        = policy evaluation that can fail
+Result<Verdict<TValue,TReason>> = value-producing policy evaluation that can fail
 ```
