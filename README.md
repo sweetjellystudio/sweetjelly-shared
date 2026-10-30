@@ -186,11 +186,9 @@ if (verdict.IsRejected)
 Run(verdict.Value);
 ```
 
-## Deprecated Block API
+## Migration from 1.x
 
-`Block()` and `IsBlocked` remain available for compatibility.
-
-Prefer `Reject()` and `IsRejected` in new code. The `Block()` factory methods are obsolete and will be removed in a future patch.
+Version 2.0.0 removes all three deprecated Block factories. Replace Block() with Reject() and Block(reason) with Reject(reason), including the value-bearing Verdict form. IsBlocked is now deprecated; replace it with IsRejected. Its behavior remains unchanged until removal in a future major release.
 
 ## Result vs Verdict
 
@@ -242,3 +240,14 @@ Verdict<TValue, TReason>        = policy decision with allowed value or reject r
 Result<Verdict<TReason>>        = policy evaluation that can fail
 Result<Verdict<TValue,TReason>> = value-producing policy evaluation that can fail
 ```
+
+## Support and compatibility
+
+Minimum supported Editor: Unity 6.3 LTS. The previous Unity 2022.3 floor is no longer supported by this migration. Verification results must name the actual Editor patch and platform; the support declaration does not claim every platform was tested.
+
+Use factories to create intentional outcomes. Default Result values report failure with an empty Error; default verdicts report rejection with a default reason. Result<T>.Value throws on failure, while the value-bearing Verdict returns its default payload on rejection. Check state before consuming a payload. Null/default success payloads are supported; a reason-bearing Reject requires a nondefault reason.
+
+Version 2.0.0 removes deprecated Block factories and retains IsBlocked as a deprecated alias for IsRejected. See [architecture][architecture] and the [compatibility decision][compatibility] for ownership, default-state behavior and migration policy. The Unity support-floor change and Block removal are breaking changes in 2.0.0.
+
+[architecture]: ARCHITECTURE.md
+[compatibility]: docs/adr/0001-support-and-api-compatibility.md

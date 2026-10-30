@@ -75,14 +75,14 @@ namespace SWeetJelly.Shared.Tests.EditMode
         public void ResultVerdict_CanRepresentPolicyEvaluation()
         {
             var result = Results.Success(
-                Verdict<DungeonEntryBlockReason>.Block(DungeonEntryBlockReason.LevelTooLow));
+                Verdict<DungeonEntryRejectReason>.Reject(DungeonEntryRejectReason.LevelTooLow));
 
             Assert.That(result.IsSuccess, Is.True);
-            Assert.That(result.Value.IsBlocked, Is.True);
-            Assert.That(result.Value.Reason, Is.EqualTo(DungeonEntryBlockReason.LevelTooLow));
+            Assert.That(result.Value.IsRejected, Is.True);
+            Assert.That(result.Value.Reason, Is.EqualTo(DungeonEntryRejectReason.LevelTooLow));
         }
 
-        private enum DungeonEntryBlockReason
+        private enum DungeonEntryRejectReason
         {
             None = 0,
             LevelTooLow = 1
