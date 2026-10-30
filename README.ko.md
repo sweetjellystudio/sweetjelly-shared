@@ -186,11 +186,9 @@ if (verdict.IsRejected)
 Run(verdict.Value);
 ```
 
-## Deprecated Block API
+## 1.x에서 이전
 
-`Block()`과 `IsBlocked`는 호환성을 위해 남아 있습니다.
-
-새 코드에서는 `Reject()`와 `IsRejected`를 사용하세요. `Block()` factory method들은 obsolete이며, 이후 patch에서 제거될 예정입니다.
+2.0.0에서 deprecated였던 Block factory 세 가지를 제거했습니다. Block()은 Reject()로, Block(reason)은 Reject(reason)으로 바꾸세요. 값을 포함한 Verdict에도 동일하게 적용합니다. IsBlocked는 이번 버전에서 deprecated 처리했습니다. IsRejected로 이전하세요. 기존 동작은 향후 major에서 제거할 때까지 유지합니다.
 
 ## Result vs Verdict
 
@@ -242,3 +240,14 @@ Verdict<TValue, TReason>        = allow value 또는 reject reason을 가진 pol
 Result<Verdict<TReason>>        = 실패할 수 있는 policy evaluation
 Result<Verdict<TValue,TReason>> = 실패할 수 있는 value-producing policy evaluation
 ```
+
+## 지원과 호환성
+
+최소 지원 Editor는 Unity 6.3 LTS입니다. 이번 전환부터 기존 Unity 2022.3 환경은 지원하지 않습니다. 검증 결과는 실제 Editor 패치와 플랫폼을 명시하며 지원 선언이 모든 플랫폼의 검증을 의미하지 않습니다.
+
+의도한 결과는 factory로 생성하세요. default Result는 빈 Error를 가진 실패이고, default Verdict는 기본 reason을 가진 거절입니다. Result<T>.Value는 실패 시 예외를 던지지만, 값을 포함한 Verdict는 거절 시 기본 payload를 반환합니다. payload 사용 전 상태를 확인하세요. 성공 payload는 null/default를 허용하고, reason을 포함한 Reject는 기본값이 아닌 reason을 요구합니다.
+
+2.0.0에서 deprecated Block factory를 제거하고 IsBlocked는 deprecated 별칭으로 유지합니다. 책임과 default 상태, 이전 정책은 [아키텍처][architecture]와 [호환성 결정][compatibility]을 참고하세요. 최소 Unity 지원 버전 상향과 Block 제거는 2.0.0의 비호환 변경입니다.
+
+[architecture]: ARCHITECTURE.md
+[compatibility]: docs/adr/0001-support-and-api-compatibility.md

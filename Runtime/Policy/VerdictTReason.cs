@@ -19,6 +19,7 @@ namespace SWeetJelly.Shared.Policy
 
         public bool IsAllowed { get; }
         public bool IsRejected => !IsAllowed;
+        [System.Obsolete("Use IsRejected instead. IsBlocked will be removed in a future major release.")]
         public bool IsBlocked => IsRejected;
         public TReason Reason { get; }
         public TReason RejectReason => Reason;
@@ -33,10 +34,5 @@ namespace SWeetJelly.Shared.Policy
             return new Verdict<TReason>(false, reason);
         }
 
-        [Obsolete("Use Reject instead. Block will be removed in a future patch.")]
-        public static Verdict<TReason> Block(TReason reason)
-        {
-            return Reject(reason);
-        }
     }
 }

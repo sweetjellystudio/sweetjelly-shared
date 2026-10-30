@@ -9,6 +9,7 @@ namespace SWeetJelly.Shared.Policy
 
         public bool IsAllowed { get; }
         public bool IsRejected => !IsAllowed;
+        [System.Obsolete("Use IsRejected instead. IsBlocked will be removed in a future major release.")]
         public bool IsBlocked => IsRejected;
 
         public static Verdict Allow()
@@ -21,10 +22,5 @@ namespace SWeetJelly.Shared.Policy
             return new Verdict(false);
         }
 
-        [System.Obsolete("Use Reject instead. Block will be removed in a future patch.")]
-        public static Verdict Block()
-        {
-            return Reject();
-        }
     }
 }
